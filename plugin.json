@@ -1,0 +1,30 @@
+{
+  "name": "BanjadoAltItem",
+  "namespace": "BanjadoAltItem",
+  "type": "template",
+  "version": "1.0.0",
+  "license": "AGPL-3.0",
+  "author": "banjado",
+  "description": "Alternatives Artikelseiten Design im wall art Stil, Variant Kacheln mit Preis, Desktop und Mobile.",
+  "serviceProvider": "BanjadoAltItem\\Providers\\BanjadoAltItemServiceProvider",
+  "containers": [
+    {
+      "key": "BanjadoAltItem::Styles",
+      "name": "Alt Item Styles",
+      "description": "CSS für das alternative Artikelseiten Layout.",
+      "provider": "BanjadoAltItem\\Containers\\StylesContainer"
+    },
+    {
+      "key": "BanjadoAltItem::Scripts",
+      "name": "Alt Item Scripts",
+      "description": "JS für Variant Kacheln und Interaktion.",
+      "provider": "BanjadoAltItem\\Containers\\ScriptsContainer"
+    },
+    {
+      "key": "BanjadoAltItem::VariantTiles",
+      "name": "Variant Tiles",
+      "description": "Größen Kacheln mit Preis wie bei wall art.",
+      "provider": "BanjadoAltItem\\Containers\\VariantTilesContainer"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+<script>
+(function() {
+  function qs(sel, root) { return (root || document).querySelector(sel); }
+  function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+  function findNativeVariationInput(root) {
+    // Je nach Ceres Version gibt es unterschiedliche Inputs
+    return (
+      qs('input[name="variationId"]', root) ||
+      qs('input[data-variation-id]', root) ||
+      qs('select[name="variationId"]', root)
+    );
+  }
+
+  function setVariationId(root, variationId) {
+    var input = findNativeVariationInput(root);
+    if (!input) return false;
+
+    if (input.tagName === 'SELECT') {
+      input.value = variationId;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    }
+
+    input.value = variationId;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    return true;
+  }
+
+  function initVariantTiles() {
+    var blocks = qsa('[data-banjado-variant-tiles]');
+    blocks.forEach(function(block) {
+      var tiles = qsa('[data-variation-id]', block);
+      if (!tiles.length) return;
+
+      tiles.forEach(function(tile) {
+        tile.addEventListener('click', function() {
+          var vid = tile.getAttribute('data-variation-id');
+          if (!vid) return;
+
+          tiles.forEach(function(t) { t.classList.remove('isActive'); });
+          tile.classList.add('isActive');
+
+          // Versucht die bestehende Ceres Variation Auswahl zu triggern
+          setVariationId(document, vid);
+        });
+      });
+    });
+  }
+
+  // Initial und nach Vue Updates noch einmal
+  document.addEventListener('DOMContentLoaded', initVariantTiles);
+  document.addEventListener('vue:mounted', initVariantTiles);
+})();
+</script>

@@ -1,0 +1,77 @@
+{#
+  Erwartung:
+  Auf der Artikelseite existiert ein Twig Kontext "item".
+  Je nach Ceres Version kann die Struktur abweichen.
+  Dieses Template versucht mehrere mögliche Pfade.
+
+  Ziel:
+  Kacheln, die Größe und Preis zeigen, und beim Klick die Variation wechseln.
+#}
+
+{% set _item = item ?? {} %}
+
+{# Variation Liste, mehrere Fallbacks #}
+{% set variations =
+  _item.variations
+  ?? _item.item.variations
+  ?? _item.documents.variations
+  ?? []
+%}
+
+{# Aktive Variation Id #}
+{% set activeVariationId =
+  _item.variation.id
+  ?? _item.variationId
+  ?? _item.item.variation.id
+  ?? null
+%}
+
+<div class="banjadoAltItem" data-banjado-variant-tiles>
+  {# Optional Titel und Kurztext, falls du es hier platzieren willst #}
+  {# <h1 class="banjadoAltItem__title">{{ _item.texts.name1 ?? _item.name ?? '' }}</h1> #}
+  {# <p class="banjadoAltItem__subtitle">{{ _item.texts.shortDescription ?? '' }}</p> #}
+
+  <div class="banjadoAltItem__tileGrid">
+    {% for v in variations %}
+      {# Größe, oft als Variation Name oder Attributwert #}
+      {% set sizeLabel =
+        v.name
+        ?? v.variationName
+        ?? v.attributes.size
+        ?? v.attributeValues.size
+        ?? v.number
+        ?? 'Variante'
+      %}
+
+      {# Preis, je nach Datenmodell #}
+      {% set price =
+        v.prices.default.price
+        ?? v.prices.default.unitPrice.value
+        ?? v.price
+        ?? v.salesPrice
+        ?? null
+      %}
+
+      {% set isActive = (activeVariationId and v.id and (v.id == activeVariationId)) %}
+
+      <div class="banjadoAltItem__tile {{ isActive ? 'isActive' : '' }}"
+           role="button"
+           tabindex="0"
+           data-variation-id="{{ v.id }}">
+        <span class="banjadoAltItem__tileCheck" aria-hidden="true"></span>
+
+        <div class="banjadoAltItem__tileSize">
+          {{ sizeLabel }}
+        </div>
+
+        <div class="banjadoAltItem__tilePrice">
+          {% if price is not null %}
+            {{ price|number_format(2, ',', '.') }} €
+          {% else %}
+            Preis lädt nach Auswahl
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
